@@ -1,10 +1,3 @@
-"""
-projekt_2.py: druhý projekt do Engeto Online Python Akademie
-
-author: Martina Drobná
-email: fiamar@seznam.cz
-"""
-
 import random
 
 separator = 60 * "-"
@@ -100,5 +93,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-            
+
 
