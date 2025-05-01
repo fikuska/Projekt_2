@@ -6,91 +6,95 @@ email: fiamar@seznam.cz
 """
 
 import random
+separator = "-" * 60
 
-separator = 60 * "-"
+def guess_number(user_number: str) -> str | None:
+    """Validates user input:
+    - number must have exactly 4 digits,
+    - number can´t start with 0,
+    - number can´t contain repeated digits,
+    - must contain only digit characters.
+    Return error message as string if invalid, otherwise None.
+    """
+    if not len(user_number) == 4:
+        return f"It doesn't contain 4 digit number."    
+    elif not user_number.isdigit():
+        return f"It isn't number."  
+    elif user_number[0] == "0":
+        return f"Number can't start with 0."         
+    elif len(set(user_number)) != len(user_number):
+        return f"Number can't contain repeated digits."
+    return None
 
-def main():
+def position(user_guess: str, random_digit: str) -> tuple[int, int]:
+    """
+    Returns a tuple (bulls, cows):
+           -  bulls = correct digit and correct position.
+           -  cows = correct digit, wrong position.
+    """
+    bull = 0
+    cow = 0
+    for position_number in range(len(user_guess)):
+        if random_digit[position_number] == user_guess[position_number]:
+            bull += 1
+        elif (
+            user_guess[position_number] in random_digit and
+            random_digit[position_number] != user_guess[position_number]
+            ):
+            cow += 1 
+    return bull, cow
+
+def sing_plur(count_bulls: int) -> str:
+    """
+    Returns the correct singular /. plural form for 'bull'.
+    (1 bull but 3 bulls)
+    """
+    if count_bulls == 1:
+        return "bull"
+    else:
+        return "bulls"
+
+def plur_sing(count_cows: int) -> str:
+    """
+    Returns the correct singular /. plural form for 'cow'.
+    (1 cow but 3 cows)
+    """
+    if count_cows == 1:
+        return "cow"    
+    else:
+        return "cows"
+
+def game_bulls_cows() -> None:
     print(" ")
     print(f"Hi there!\n{separator}")
     print(f"I've generated a random 4 digit number for you.")
     print(f"Let's play a bulls and cows game.\n{separator}")
 
-    # Generating four-digit number
-    numbers = list(range(0, 10))
+    # Generating random 4-digit number with no repeats and not starting with 0.
+    numbers: list[int] = list(range(0, 10))
     random.shuffle(numbers)
     if numbers[0] == 0:
-        # The number can't start with 0
-        # Replace numbers[0] that starts with "0" with 
-        # numbers[1] and vice versa
         numbers[0], numbers[1] = numbers[1], numbers[0]
-    four_digit = (f"{numbers[0]}{numbers[1]}{numbers[2]}{numbers[3]}")
+    four_digit: str = f"{numbers[0]}{numbers[1]}{numbers[2]}{numbers[3]}"
 
-    count_guess = 0
+    count_guess: int = 0
 
     while True:
         count_guess += 1
-        guess = str(input("Enter a number!\n"))
+        guess = input("Enter a number!\n")
 
-        def guess_number(user_number: str) -> str:
-            """Checked that:
-                - the user has entered shorter or longer number,
-                - number can´t start with 0,
-                - number can´t contain the same number ane
-                - must contain only digit number.
-            """
-            if not len(user_number) == 4:
-                return f"It doesn't contain 4 digit number."    
-            elif not user_number.isdigit():
-                return f"It isn't number."  
-            elif user_number[0] == "0" and len(user_number) == 4:
-                return f"Number can't start with 0."         
-            elif len(set(user_number)) != len(user_number):
-                return f"It can't contain the same digit."     
-        mistake = (guess_number(guess))
-
+        mistake = guess_number(guess)
         if mistake:
             print(mistake)
             print(separator)
         else:
-            def position(bull: int, cow: int) -> str:
-                """
-                Bull prints the count of numbers if the user guessed
-                both the number and its location correctly.
-                Cow prints the number of numbers if the user guessed
-                only the number but not its position.
-                """
-                for position_number in range(len(guess)):
-                    if four_digit[position_number] == guess[position_number]:
-                        bull += 1
-                    if (
-                        guess[position_number] in four_digit and 
-                        four_digit[position_number] != guess[position_number]
-                    ):
-                        cow += 1    
-                def sing_plur() -> str:
-                    """
-                    It takes into account singular and plural in the output.
-                    (1 bull but 3 bulls)
-                    """
-                    if bull == 1:
-                        return "bull"
-                    else:
-                        return "bulls"
-                def plur_sing() -> str:
-                    """
-                    It takes into account singular and plural in the output.
-                    (1 cow but 3 cows)
-                    """
-                    if cow == 1:
-                        return "cow"    
-                    else:
-                        return "cows"
-                return f"{bull} {sing_plur()}, {cow} {plur_sing()}"
-            count = position(0, 0)
-            print(count)
+            count_bull, count_cow = position(guess, four_digit)
+            bulls = sing_plur(count_bull)
+            cows = plur_sing(count_cow)
+            print(f"{count_bull} {bulls}, {count_cow} {cows}")
             print(separator)
 
-            if count == "4 bulls, 0 cows":
+            if count_bull == 4:
                 break
 
     print(f"Correct, you've guessed the right number in {count_guess} guesses.")
@@ -99,6 +103,6 @@ def main():
     print(" ")
 
 if __name__ == "__main__":
-    main()
+    game_bulls_cows()
             
 
